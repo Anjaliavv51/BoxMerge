@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Merge Game</title>
+    <style>
+        #gameArea {
+            width: 400px;
+            height: 400px;
+            border: 2px solid black;
+            position: relative;
+        }
+        .box {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea"></div>
+    <div id="score">Score: 0</div>
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('score');
+        let playerBox;
+        let score = 0;
+        const colors = ['red', 'blue', 'green', 'yellow'];
+        const boxes = [];
+
+        function createBox(x, y, color, size = 40) {
+            const box = document.createElement('div');
+            box.className = 'box';
+            box.style.left = x + 'px';
+            box.style.top = y + 'px';
+            box.style.backgroundColor = color;
+            box.style.width = size + 'px';
+            box.style.height = size + 'px';
+            gameArea.appendChild(box);
+            return box;
+        }
+
+        function initGame() {
+            playerBox = createBox(180, 180, colors[Math.floor(Math.random() * colors.length)]);
+            for (let i = 0; i < 5; i++) {
+                createRandomBox();
+            }
+        }
+
+        function createRandomBox() {
+            const x = Math.floor(Math.random() * 360);
+            const y = Math.floor(Math.random() * 360);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const box = createBox(x, y, color);
+            boxes.push(box);
+        }
+
+        function moveBox(direction) {
+            const currentLeft = parseInt(playerBox.style.left);
+            const currentTop = parseInt(playerBox.style.top);
+            switch (direction) {
+                case 'ArrowLeft':
+                    playerBox.style.left = Math.max(0, currentLeft - 10) + 'px';
+                    break;
+                case 'ArrowRight':
+                    playerBox.style.left = Math.min(360, currentLeft + 10) + 'px';
+                    break;
+                case 'ArrowUp':
+                    playerBox.style.top = Math.max(0, currentTop - 10) + 'px';
+                    break;
+                case 'ArrowDown':
+                    playerBox.style.top = Math.min(360, currentTop + 10) + 'px';
+                    break;
+            }
+            checkCollision();
+        }
+
+        function checkCollision() {
+            const playerRect = playerBox.getBoundingClientRect();
+            boxes.forEach((box, index) => {
+                const boxRect = box.getBoundingClientRect();
+                if (isColliding(playerRect, boxRect)) {
+                    if (playerBox.style.backgroundColor === box.style.backgroundColor) {
+                        mergeBoxes(box);
+                    } else {
+                        shrinkPlayerBox();
+                    }
+                    boxes.splice(index, 1);
+                    box.remove();
+                    createRandomBox();
+                }
+            });
+        }
+
+        function isColliding(rect1, rect2) {
+            return !(rect1.right < rect2.left || 
+                     rect1.left > rect2.right || 
+                     rect1.bottom < rect2.top || 
+                     rect1.top > rect2.bottom);
+        }
+
+        function mergeBoxes(box) {
+            const newSize = parseInt(playerBox.style.width) + 10;
+            playerBox.style.width = newSize + 'px';
+            playerBox.style.height = newSize + 'px';
+            score += 10;
+            updateScore();
+        }
+
+        function shrinkPlayerBox() {
+            const newSize = Math.max(20, parseInt(playerBox.style.width) - 10);
+            playerBox.style.width = newSize + 'px';
+            playerBox.style.height = newSize + 'px';
+            score -= 5;
+            updateScore();
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                moveBox(event.key);
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>
