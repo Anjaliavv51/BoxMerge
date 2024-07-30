@@ -18,7 +18,7 @@
 
 ## Checklist
 <!-- [X] - put a cross/X inside [] to check the box -->
-- [ ] I have gone through the [contributing guide](https://github.com/Anjaliavv51/Touch-No-Fire-Game/)
+- [ ] I have gone through the [contributing guide](https://github.com/Anjaliavv51/BoxMerge/)
 - [ ] I have updated my branch and synced it with project `main` branch before making this PR
 - [ ] I have performed a self-review of my code
 - [ ] I have tested the changes thoroughly before submitting this pull request.
